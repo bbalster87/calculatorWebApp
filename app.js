@@ -39,13 +39,17 @@ function buildButtons() {
 }
 
 function receiveInput() {
+  if (displayDiv.textContent === "Can't divide by 0") {
+    displayDiv.textContent = "";
+  }
+
   // Clear all text on user clicking Clear button
   if (this.textContent === "Clear") {
     clear()
   }
 
   // Add a number to the current number string
-  else if (Number(this.textContent)) {
+  else if (Number(this.textContent) || this.textContent === "0") {
     displayDiv.textContent += this.textContent;
     currentValue += this.textContent;
     lastInput = this.textContent;
@@ -90,6 +94,7 @@ function receiveInput() {
 
   // Calculate the correct answer based on the input values
   else if (this.textContent === "=") {
+    inputValues.push(currentValue)
     calculate()
   }
 
@@ -127,7 +132,37 @@ function clear() {
 
 function calculate() {
   // Calculate the answer
-  console.log("placeholder for =")
+  let answer = "";
+  let firstNum = "";
+
+  operations.forEach(operation => {
+    if (answer === "") {
+      firstNum = inputValues.shift();
+    } else {
+      firstNum = answer;
+    }
+    const secondNum = inputValues.shift();
+
+    if (operation === "+") {
+      answer = Number(firstNum) + Number(secondNum);
+    } else if (operation === "-") {
+      answer = Number(firstNum) - Number(secondNum);
+    } else if (operation === "x") {
+      answer = Number(firstNum) * Number(secondNum);
+    } else if (operation === "÷") {
+      answer = Number(firstNum) / Number(secondNum);
+    }
+  })
+
+  clear();
+
+  if (isFinite(answer)) {
+    displayDiv.textContent = answer;
+    currentValue = answer.toString();
+    lastInput = displayDiv.textContent.slice(-1);
+  } else {
+    displayDiv.textContent = "Can't divide by 0"
+  }
 }
 
 buildButtons()
